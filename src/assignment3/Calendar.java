@@ -1,4 +1,4 @@
-package assignment2;
+package assignment3;
 
 import java.util.InputMismatchException;
 
@@ -19,6 +19,8 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 /******************************************************************************
+ *  Partners: Fatemeh Nouri and Danielle Schwartz
+ *  
  *  Compilation:  javac Calendar.java
  *  Execution:    java Calendar choice
  *
@@ -84,6 +86,12 @@ public class Calendar
 	   return false;
   }
 
+   /**
+    * Prints a single month based on the Gregorian calendar.
+    * 
+    * @param month an integer representing the month
+    * @param year an integer representing the year
+    */
    private static void printMonth(int month, int year) {
 	     
 	      // days[i] = number of days in month i (skip month 0)
@@ -112,6 +120,14 @@ public class Calendar
 	      System.out.println("*****************************");
 	   }
    
+   /**
+    * Prompts the user for input of a month and year as month:year and returns an
+    * array of those integer values.
+    * 
+    * @param sc	Scanner to receive input from command line
+    * @param arg	An optional String argument to add to the prompt
+    * @return			An integer array consisting of the month and year
+    */
    private static int[] promptMonthYear(Scanner sc, String arg) {
 	   boolean valid = false;
 	   int month = 0;
@@ -145,6 +161,11 @@ public class Calendar
 	   return rv; /* CLI */
    }
    
+   /**
+    * Prompts the user for input of a year as and returns that value.
+    * @param sc	Scanner to receive input from command line
+    * @return			an integer representing the chosen year
+    */
    private static int promptYear(Scanner sc) {
 	   boolean valid = false;
 	   int year = 0;
@@ -179,7 +200,7 @@ public class Calendar
     * 	month to the last
 	* Option 4: Exit the program.
     * 
-    * @return the chosen option
+    * @return the chosen option as an integer
     */
    private static int promptSelection(Scanner sc) {
 	   boolean valid = false;
@@ -210,6 +231,11 @@ public class Calendar
 	   return option;
    }
 
+   /**
+    * Main method
+    * 
+    * @param args
+    */
    public static void main(String[] args) {
 	  int year = 0;
 	  boolean valid = false;
@@ -281,8 +307,6 @@ public class Calendar
         		  printMonth(month, endVals[1]);
         	  }
     	  }
-
-    	  
     	  break;
       case 4:
 		  	System.out.println("Exiting program...");
@@ -292,7 +316,6 @@ public class Calendar
     		  System.exit(1);
       }
      
-
       sc.close();
       
    } // end main
