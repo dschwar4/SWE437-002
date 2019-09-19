@@ -170,6 +170,7 @@ public class Calendar
     * Option 2: Given a specified year, print an entire calendar year
     * Option 3: Given two pairs of month:year, print a calendar from the first
     * 	month to the last
+	* Option 4: Exit the program.
     * 
     * @return the chosen option
     */
