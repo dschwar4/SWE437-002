@@ -20,10 +20,10 @@ import java.util.Scanner;
 
 /******************************************************************************
  *  Compilation:  javac Calendar.java
- *  Execution:    java Calendar month year
+ *  Execution:    java Calendar choice
  *
- *  This program reads the month and year from the command line
- *  and prints a calendar for that month.
+ *  This program reads the user choice from the menu printed and asks for more
+ *  inputs depending on the option chosen by the user.
  *
  *  % java Calendar
  *  Enter month: 7
@@ -102,6 +102,7 @@ public class Calendar
 	         if (((i + wd) % 7 == 0) || (i == days[month]))
 	            System.out.println();
 	      }
+	      System.out.println("*****************************");
 	   }
    
    private static int[] promptMonthYear(Scanner sc, String arg) {
@@ -178,20 +179,22 @@ public class Calendar
 	   
 	   do {
 		   System.out.println("Please enter a number to select an option.\n"
-		   + "Option 1: Print a single calendar year.\n"
-		   + "Option 2: Print a calendar from a starting month to an ending month.");
-		   System.out.print("Select 1, 2, or 3: ");
+			+ "Option 1: Print a specific month of a single calendar year.\n"
+		   + "Option 2: Print a single calendar year.\n"
+		   + "Option 3: Print a calendar from a starting month to an ending month.\n"
+		   + "Option 4: Exit the program.");
+		   System.out.print("Select 1, 2, 3 or 4: ");
 		   
 		   try {
 			   option = sc.nextInt();
-			   if ((option > 0) && (option < 4)) {	// chose 1, 2, or 3; selection successfully made
+			   if ((option > 0) && (option < 5)) {	// chose 1, 2, or 3; selection successfully made
 				   valid = true;
 				   System.out.println("You chose option " + option + "\n");
 			   } else {	// incorrect selection
-				   System.out.println("\nSelection must be an integer, 1, 2, or 3.\n");
+				   System.out.println("\nSelection must be an integer, 1, 2, 3 or 4.\n");
 			   }
 		   } catch (InputMismatchException e) {
-			   System.out.println("\nSelection must be an integer, 1, 2, or 3.\n");
+			   System.out.println("\nSelection must be an integer, 1, 2, 3 or 4.\n");
 			   sc.next();
 		   }	    	  
 	   } while(!valid);
@@ -273,6 +276,9 @@ public class Calendar
 
     	  
     	  break;
+      case 4:
+		  	System.out.println("Exiting program...");
+		  	System.exit(0);
       default:
     		  System.out.println("An error occurred. Exiting program...");
     		  System.exit(1);
