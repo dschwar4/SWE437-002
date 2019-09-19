@@ -1,5 +1,7 @@
 package assignment2;
 
+import java.util.InputMismatchException;
+
 /** File name: Calendar.java
  *  Date:      14-August-2019
  *  Author:    Original author unknown, from an introductory programming class at Princeton
@@ -36,8 +38,6 @@ import java.util.Scanner;
  *  31
  *
  ******************************************************************************/
-
-
 public class Calendar
 {
    /***************************************************************************
@@ -46,11 +46,19 @@ public class Calendar
     *  For month, use 1 for January, 2 for February, and so forth.
     *  Returns 0 for Sunday, 1 for Monday, and so forth.
     ***************************************************************************/
+	// months[i] = name of month i
+	final static String[] months = {
+	      "",                               // leave empty so that months[1] = "January"
+	      "January", "February", "March",
+	      "April",   "May",      "June",
+	      "July",    "August",   "September",
+	      "October", "November", "December"
+	};
 
    // compute weekday based on the day of the month
    // Sunday is 0, Monday is 1, ... Saturday is 6
    private static int weekDay(int month, int day, int year) {
-      int y = year - (14 - month) / 10;
+      int y = year - (14 - month) / 12;
       int x = y + y/4 - y/100 + y/400;
       int m = month + 12 * ((14 - month) / 12) - 2;
       int wd = (day + x + (31*m)/12) % 7;
@@ -69,97 +77,210 @@ public class Calendar
 	   return false;
   }
 
-   // Read and return a string input from the command line
-   private static String readInput(Scanner sc, String arg) {
-      System.out.print("Enter "+arg+": "); /* CLI */
-      return(sc.next()); /* CLI */
+   private static void printMonth(int month, int year) {
+	     
+	      // days[i] = number of days in month i (skip month 0)
+	      int[] days = { 0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+
+	      // check for leap year
+	      if (month == 2 && isLeapYear(year)) {
+	    	  days[month] = 29;
+	      }
+
+	      // print calendar header
+	      System.out.println("   " + months[month] + " " + year);
+	      System.out.println(" S  M Tu  W Th  F  S");
+
+	      // starting day of the week
+	      int wd = weekDay(month, 1, year);
+	      // print the calendar
+	      // space over for the first day
+	      for (int i = 0; i < wd; i++)
+	         System.out.print("   ");
+	      for (int i = 1; i <= days[month]; i++) {
+	         System.out.printf("%2d ", i);
+	         if (((i + wd) % 7 == 0) || (i == days[month]))
+	            System.out.println();
+	      }
+	   }
+   
+   private static int[] promptMonthYear(Scanner sc, String arg) {
+	   boolean valid = false;
+	   int month = 0;
+	   int year = 0;
+	   String[] input;
+	   int[] rv = new int[2];		// return value array of ints; rv[0] = month, rv[1] = year
+	   
+	   do {
+		   System.out.print("Enter a" + arg + " month and year in the format \"month:year\":"); /* CLI prompt*/
+		  input = sc.next().split(":");
+
+		   try {
+			   month = Integer.parseInt(input[0]);
+			   year = Integer.parseInt(input[1]);
+			   
+			   if ((month >=1) && (month <= 12) && (year >= 0)) {	// valid date provided
+				   valid = true;
+				   System.out.println("You chose " + months[month] + " " + year + "\n");
+			   } else {	// incorrect selection
+				   System.out.println("\nMonth must be an integer between 1 and 12 and "
+						   + "year must be a nonnegative integer.\n");
+			   }
+		   } catch (Exception e) {
+			   System.out.println("\nMonth must be an integer between 1 and 12 and "
+					   + "year must be a nonnegative integer.\n");
+		   }	
+      } while (!valid);
+
+	   rv[0] = month;
+	   rv[1] = year;
+	   return rv; /* CLI */
+   }
+   
+   private static int promptYear(Scanner sc) {
+	   boolean valid = false;
+	   int year = 0;
+	   
+	   do {
+		   System.out.println("Enter a year you would like to see as an integer. Example: 2018");
+		   System.out.print("Enter year now: ");
+
+		   try {
+			   year = sc.nextInt();
+			   if (year >= 0) {	// year successfully provided
+				   valid = true;
+				   System.out.println("You chose the year " + year + "\n");
+			   } else {	// incorrect selection
+				   System.out.println("\nSelection must be a nonnegative integer.\n");
+			   }
+		   } catch (InputMismatchException e) {
+			   System.out.println("\nSelection must be a nonnegative integer.\n");
+			   sc.next();
+		   }	    	  
+	   } while(!valid);
+	   
+	   return year;
+   }
+
+   
+   /** Prompt user for program option. If invalid option selected, prompts again.
+    * 
+    * Option 1: Given a month:year pair, print a single month
+    * Option 2: Given a specified year, print an entire calendar year
+    * Option 3: Given two pairs of month:year, print a calendar from the first
+    * 	month to the last
+    * 
+    * @return the chosen option
+    */
+   private static int promptSelection(Scanner sc) {
+	   boolean valid = false;
+	   int option = 0;
+	   
+	   do {
+		   System.out.println("Please enter a number to select an option.\n"
+		   + "Option 1: Print a single calendar year.\n"
+		   + "Option 2: Print a calendar from a starting month to an ending month.");
+		   System.out.print("Select 1, 2, or 3: ");
+		   
+		   try {
+			   option = sc.nextInt();
+			   if ((option > 0) && (option < 4)) {	// chose 1, 2, or 3; selection successfully made
+				   valid = true;
+				   System.out.println("You chose option " + option + "\n");
+			   } else {	// incorrect selection
+				   System.out.println("\nSelection must be an integer, 1, 2, or 3.\n");
+			   }
+		   } catch (InputMismatchException e) {
+			   System.out.println("\nSelection must be an integer, 1, 2, or 3.\n");
+			   sc.next();
+		   }	    	  
+	   } while(!valid);
+	   
+	   return option;
    }
 
    public static void main(String[] args) {
-	  String monthStr = null;
-	  int month = 0;
 	  int year = 0;
 	  boolean valid = false;
+	  int[] startVals, endVals;
 	  
       Scanner sc = new Scanner(System.in); /* CLI */
 
-      // months[i] = name of month i
-      String[] months = {
-            "",                               // leave empty so that months[1] = "January"
-            "January", "February", "March",
-            "April",   "May",      "June",
-            "July",    "August",   "September",
-            "October", "November", "December"
-      };
-      
-      // Get month and year from user    
 
-     // parse month and validate
-      do {   
-	      monthStr = readInput(sc, "month");
-	      try {	// try to parse as an int
-	    	  month = Integer.parseInt(monthStr);
-	    	  if (month > 12) {	// if out of bounds month, prompt again
-	    		  System.out.println("Invalid input. Month must be the full" +
-	    				  " month name or an integer between 1 and 12. Try again.");
-	    		  continue;
-	    	  }
-	      } catch (NumberFormatException e) {
-	    	  for (int i = 0; i < months.length; i++) {
-	    		  if (monthStr.equalsIgnoreCase(months[i])) {
-	    			  month = i;
+      
+      // Determine which task to perform
+      int option = promptSelection(sc);
+
+      // Perform chosen task
+      switch(option) {
+      case 1:	// Option 1: print a single month
+    	  // prompt for a month and year
+    	  startVals = promptMonthYear(sc, "");
+    	  
+    	  // print month
+    	  printMonth(startVals[0], startVals[1]);
+    	  break;
+      case 2:	// Option 2: print an entire year
+    	  // prompt for a single year
+    	  year = promptYear(sc);
+    	  
+    	  // print entire year, month by month
+    	  for (int month = 1; month <= 12; month++) {
+    		  printMonth(month, year);
+    	  }
+    	  break;
+      case 3:	// Option 3: print a calendar from start month to end month
+    	  do {
+        	  // prompt for 2 pairs
+        	  startVals = promptMonthYear(sc, " starting");
+        	  endVals = promptMonthYear(sc, "n ending");
+        	  
+        	  // ensure start date is before end date
+	    	  if (startVals[1] >= endVals[1]) {
+	    		  if (startVals[0] > endVals[0]) {
+	    			  ///// failed, reprompt
+	    			  System.out.println("Start date must be before end date. Try again.\n");
+	    			  continue;
 	    		  }
 	    	  }
-	      }
-	      if (month < 1) {	// if month was not valid string or number, prompt again
-    		  System.out.println("Invalid input. Month must be the full" +
-    				  " month name or an integer between 1 and 12. Try again.");
-	    	  continue;
-	      }
-	      valid = true;	// conditions met, valid month provided!
-      } while (!valid);
-      
-      valid = false;	// reset condition
-      // parse year and validate
-      do {
-	      try {	// try to parse as an int
-	    	  year  = Integer.parseInt(readInput(sc, "year"));  /* CLI */ // year
-	    	  if (year < 0) {	// negative year given, prompt again
-	    		  System.out.println("Year must be an integer 0 or greater. Try again.");
-	    		  continue;
+	    	  valid = true;
+    	  } while (!valid);
+    	  
+    	  // print calendar
+    	  if (startVals[1] == endVals[1]) {	// if only 1 calendar year requested
+	    	  for (int month = startVals[0]; month <= endVals[0]; month ++) {
+	    		  printMonth(month, startVals[1]);
 	    	  }
-	      } catch (NumberFormatException e) {	// invalid input, prompt again
-	    	  System.out.println("Year must be an integer 0 or greater. Try again.");
-	    	  continue;
-	      }
-	      valid = true;	// conditions met, valid year provided!
-      } while (!valid);
+    	  } else {	// else print all years requested
+    		  // first year...
+    		  for (int month = startVals[0]; month <= 12; month++) {
+    			  printMonth(month, startVals[1]);
+    		  }
+    		  
+        	  // middle years, if any...
+        	  if (endVals[1] > (startVals[1] + 1)) {
+    	    	  for (int yr = startVals[1] + 1; yr < endVals[1]; yr++) {	// for each year...
+    	    		  for (int month = 1; month <= 12; month++) {		// for each month
+    	    			  printMonth(month, yr);
+    	    		  }
+    	    	  }
+        	  }
+        	  // final year...
+        	  for (int month = 1; month <= endVals[0]; month++) {
+        		  printMonth(month, endVals[1]);
+        	  }
+    	  }
+
+    	  
+    	  break;
+      default:
+    		  System.out.println("An error occurred. Exiting program...");
+    		  System.exit(1);
+      }
+     
+
       sc.close();
       
-      // days[i] = number of days in month i (skip month 0)
-      int[] days = { 0, 31, 28, 31, 30, 31, 30, 31, 30, 30, 31, 30, 31 };
-
-      // check for leap year
-      if (month == 2 && isLeapYear(year)) {
- //       days[month] = 30;
-    	  days[month] = 29;
-      }
-
-      // print calendar header
-      System.out.println("   " + months[month] + " " + year);
-      System.out.println(" S  M Tu  W Th  F  S");
-
-      // starting day of the week
-      int wd = weekDay(month, 1, year);
-      // print the calendar
-      // space over for the first day
-      for (int i = 0; i < wd; i++)
-         System.out.print("   ");
-      for (int i = 1; i <= days[month]; i++) {
-         System.out.printf("%2d ", i);
-         if (((i + wd) % 7 == 0) || (i == days[month]))
-            System.out.println();
-      }
-   }
+   } // end main
 }  // end class
 
