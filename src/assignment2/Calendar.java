@@ -65,7 +65,14 @@ public class Calendar
       return wd;
    }
 
-   // return true if the given year is a leap year
+	/*
+	Here is the logic for the following algorithm:
+	if the year is divisible by 400 => leap year
+	if year is evenly divisible by 4 and not 100 => leap year
+	if the year is divisible by 4 and 100 and 400 => leap year
+	if the year is divisible by 100 and not 400 => not a leap year
+	*/
+	// return true if the given year is a leap year
    private static boolean isLeapYear(int year) {
 	   if (year % 400 == 0)
 		   return true;
