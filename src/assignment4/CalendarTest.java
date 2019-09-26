@@ -1,5 +1,5 @@
 //Tests for the Calendar.java class
-//Authors: Fatemeh Nouri, Danielle Schwartz
+// Fatemeh Nouri, Danielle Schwartz
 
 import static org.junit.Assert.*;
 
@@ -10,7 +10,7 @@ import java.util.*;
 public class CalendarTest
 {
 
-private final InputStream systemIn = System.in;
+    private final InputStream systemIn = System.in;
     public static void main(String args[]){
         org.junit.runner.JUnitCore.main("CalendarTest");
     }
