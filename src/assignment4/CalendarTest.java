@@ -1,5 +1,3 @@
-//Tests for the Calendar.java class
-//Authors: Fatemeh Nouri, Danielle Schwartz
 
 //import org.junit.*;
 //import static org.junit.Assert.*;
@@ -9,12 +7,32 @@
 //import java.io.InputStream;
 //import java.io.ByteArrayInputStream;
 
+//import org.junit.Test;
+//import static org.junit.Assert.*;
+//
+//import java.io.*;
+//
+//import org.junit.*;
+//import java.util.*;
+
+/*
+ *  Original author: Kesina Baral
+ *  Authors: Fatemeh Nouri and Danielle Schwartz
+ * 
+ * Tests for Calendar.java
+ */
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.PrintStream;
+
 import static org.junit.Assert.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
-import java.io.*;
-
-import org.junit.*;
-import java.util.*;
 public class CalendarTest
 {
 //    private PrintStream sysOut;
@@ -48,24 +66,8 @@ public class CalendarTest
 ////    String msg = String.format("Output mismatch\nEXPECTED:\n%s\nACTUAL:\n%s\n",expect,actual);
 ////    assertTrue(msg,expect.equals(actualNewline));
 ////  }
-//    @Test public void happyPath()
-//    {
-//        String testMonth = "9";
-//        String testYear = "2019";
-//        String expect="   September 2019\n"+" S  M Tu  W Th  F  S\n"+" 1  2  3  4  5  6  7\n"+
-//                " 8  9 10 11 12 13 14\n"+"15 16 17 18 19 20 21\n"+"22 23 24 25 26 27 28\n"+
-//                "29 30\n";
-//        ByteArrayInputStream calendarInput=new ByteArrayInputStream(testMonth.getBytes());
-//        System.setIn(calendarInput);
-//        calendarInput=new ByteArrayInputStream(testYear.getBytes());
-//        System.setIn(calendarInput);
-//        Calendar.main(new String[0]);
-//        String got = calendarResult.toString();
-//        String res = got.replaceAll("\\r?\\n","\n");
-//        assertTrue("failed",expect.equals(res));
-//
-//    }
-private final InputStream systemIn = System.in;
+
+	private final InputStream systemIn = System.in;
     public static void main(String args[]){
         org.junit.runner.JUnitCore.main("CalendarTest");
     }
@@ -96,18 +98,54 @@ private final InputStream systemIn = System.in;
     }
 
     @Test
-    public void testCase1() {
-        final String testString = "9\n2019";
-        provideInput(testString);
-//        final String testString2 = "2019\n";
-//        provideInput(testString2);
-        String x = "Enter month:\nEnter year:\n    September 2019\n"+" S  M Tu  W Th  F  S\n"+" 1  2  3  4  5  6  7 \n"+
-                " 8  9 10 11 12 13 14 \n"+"15 16 17 18 19 20 21 \n"+"22 23 24 25 26 27 28 \n"+
-                "29 30 \n";
-        Calendar.main(new String[0]);
+    public void testHappyPath() {
+	    final String data = "9\n2019"; //\n makes sure that 9 and 2019 are considered as two separate inputs
+	
+	    ByteArrayInputStream mockInput = new ByteArrayInputStream(data.getBytes());
+	    System.setIn(mockInput);
+	
+	    Calendar.main(new String[0]);
 
-        assertEquals(x, getOutput());
+	    assertTrue(testOut.toString().contains("September 2019"));
     }
+    
+    @Test
+    public void testLeapYear() {
+        final String data = "2\n2020";
+        
+	    ByteArrayInputStream mockInput = new ByteArrayInputStream(data.getBytes());
+	    System.setIn(mockInput);
+	
+	    Calendar.main(new String[0]);
+	
+	    assertTrue(getOutput().contains("29"));
+    }
+    
+    @Test
+    public void testNonLeapYear() {
+        final String data = "2\n2021";
+        
+	    ByteArrayInputStream mockInput = new ByteArrayInputStream(data.getBytes());
+	    System.setIn(mockInput);
+	
+	    Calendar.main(new String[0]);
+	
+	    assertTrue(!testOut.toString().contains("29"));
+    }
+    
+    
+//    public void testHappyPath() {
+//        final String testString = "9\n2019";
+//        provideInput(testString);
+////        final String testString2 = "2019\n";
+////        provideInput(testString2);
+//        String x = "Enter month: Enter year:    September 2019\n"+" S  M Tu  W Th  F  S\n"+" 1  2  3  4  5  6  7 \n"+
+//                " 8  9 10 11 12 13 14 \n"+"15 16 17 18 19 20 21 \n"+"22 23 24 25 26 27 28 \n"+
+//                "29 30\n";
+//        Calendar.main(new String[0]);
+//
+//        assertEquals(x, getOutput());
+//    }
 }
 
 
