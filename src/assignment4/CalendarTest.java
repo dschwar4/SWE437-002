@@ -1,14 +1,6 @@
 //Tests for the Calendar.java class
 //Authors: Fatemeh Nouri, Danielle Schwartz
 
-//import org.junit.*;
-//import static org.junit.Assert.*;
-//import java.util.*;
-//import java.io.PrintStream;
-//import java.io.ByteArrayOutputStream;
-//import java.io.InputStream;
-//import java.io.ByteArrayInputStream;
-
 import static org.junit.Assert.*;
 
 import java.io.*;
@@ -17,165 +9,117 @@ import org.junit.*;
 import java.util.*;
 public class CalendarTest
 {
-//    private PrintStream sysOut;
-//    private InputStream sysIn;
-//    private ByteArrayOutputStream calendarResult;
-////    private ByteArrayInputStream calendarInput;
-//    @BeforeClass
-//    public void setUp(){
-//            sysIn=System.in;
-//            sysOut=System.out;
-//    }
-//    @Before
-//    public void setUpStreams(){
-////        calendarInput=new ByteArrayInputStream();
-//        calendarResult=new ByteArrayOutputStream();
-//        System.setOut(new PrintStream(calendarResult));
-////        System.setIn(new InputStream(calendarInput));
-//    }
-//    @After
-//    public void cleanUpStreams() {
-//        System.setOut(null);
-//        System.setIn(null);
-//        System.setOut(sysOut);
-//        System.setIn(sysIn);
-//    }
-//    //  @Test public void HelloLab_main() {
-////    String expect = "Hello, Lab!\n";
-////    HelloLab.main(empty);
-////    String actual = localOut.toString();
-////    String actualNewline = actual.replaceAll("\\r?\\n","\n"); // Eliminate windows linebreaks
-////    String msg = String.format("Output mismatch\nEXPECTED:\n%s\nACTUAL:\n%s\n",expect,actual);
-////    assertTrue(msg,expect.equals(actualNewline));
-////  }
-//    @Test public void happyPath()
-//    {
-//        String testMonth = "9";
-//        String testYear = "2019";
-//        String expect="   September 2019\n"+" S  M Tu  W Th  F  S\n"+" 1  2  3  4  5  6  7\n"+
-//                " 8  9 10 11 12 13 14\n"+"15 16 17 18 19 20 21\n"+"22 23 24 25 26 27 28\n"+
-//                "29 30\n";
-//        ByteArrayInputStream calendarInput=new ByteArrayInputStream(testMonth.getBytes());
-//        System.setIn(calendarInput);
-//        calendarInput=new ByteArrayInputStream(testYear.getBytes());
-//        System.setIn(calendarInput);
-//        Calendar.main(new String[0]);
-//        String got = calendarResult.toString();
-//        String res = got.replaceAll("\\r?\\n","\n");
-//        assertTrue("failed",expect.equals(res));
-//
-//    }
+
 private final InputStream systemIn = System.in;
     public static void main(String args[]){
         org.junit.runner.JUnitCore.main("CalendarTest");
     }
-    private final PrintStream systemOut = System.out;
-
-    private ByteArrayInputStream testIn;
-    private ByteArrayOutputStream testOut;
-
+    private ByteArrayInputStream input;
+    private ByteArrayOutputStream output;
+    private PrintStream outputStream = System.out;
     @Before
     public void setUpOutput() {
-        testOut = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(testOut));
+        output = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(output));
     }
 
-    private void provideInput(String data) {
-        testIn = new ByteArrayInputStream(data.getBytes());
-        System.setIn(testIn);
+    private void provideCommandLineArguments(String inputData) {
+        input = new ByteArrayInputStream(inputData.getBytes());
+        System.setIn(input);
     }
 
-    private String getOutput() {
-        return testOut.toString();
+    private String getCalendarResult() {
+        return output.toString();
     }
 
     @After
     public void restoreSystemInputOutput() {
         System.setIn(systemIn);
-        System.setOut(systemOut);
+        System.setOut(outputStream);
     }
 
+    /**
+     * This test case checks for a happy path: testing if an expected input behaves correctly.
+     */
     @Test
-    public void testCase1() {
-        final String testString = "9\n2019";
-        provideInput(testString);
-//        final String testString2 = "2019\n";
-//        provideInput(testString2);
-        String x = "Enter month:\nEnter year:\n    September 2019\n"+" S  M Tu  W Th  F  S\n"+" 1  2  3  4  5  6  7 \n"+
+    public void HappyPathTest() {
+        final String inputString = "9\n2019";
+        provideCommandLineArguments(inputString);
+        String expectedResult = "Enter month: Enter year:    September 2019\n"+" S  M Tu  W Th  F  S\n"+" 1  2  3  4  5  6  7 \n"+
                 " 8  9 10 11 12 13 14 \n"+"15 16 17 18 19 20 21 \n"+"22 23 24 25 26 27 28 \n"+
                 "29 30 \n";
+
         Calendar.main(new String[0]);
 
-        assertEquals(x, getOutput());
+        assertTrue("Can't pass the Happy Path test: possible mistakes in the design of the algorithm.\n",expectedResult.equals(getCalendarResult()));
+    }
+    /**
+     * This test case checks for a leap year: testing if a leap year is identified.
+     */
+    @Test
+    public void leapYearTest1() {
+        final String inputString = "2\n2020";
+        provideCommandLineArguments(inputString);
+        String expectedResult = "Enter month: Enter year:    February 2020\n"+" S  M Tu  W Th  F  S\n"+"                   1 \n"+" 2  3  4  5  6  7  8 \n"+
+                " 9  10 11 12 13 14 15 \n"+"16 17 18 19 20 21 22 \n"+"23 24 25 26 27 28 29 \n";
+        Calendar.main(new String[0]);
+        assertTrue("The leap year calculation is incorrect.\n",expectedResult.equals(getCalendarResult()));
+    }
+    /**
+     * This test case checks for a non-leap year: testing if the leap year algorithm is correct.
+     */
+    @Test
+    public void leapYearTest2() {
+        final String inputString = "2\n2019";
+        provideCommandLineArguments(inputString);
+        String expectedResult = "Enter month: Enter year:    February 2019\n"+" S  M Tu  W Th  F  S\n"+"                1  2 \n"+" 3  4  5  6  7  8  9 \n"+
+                "10 11 12 13 14 15 16 \n"+"17 18 19 20 21 21 23 \n"+
+                "24 25 26 27 28 \n";
+        Calendar.main(new String[0]);
+        assertTrue("The leap year algorithm is incorrect.\n",expectedResult.equals(getCalendarResult()));
+    }
+    /**
+     * This test case checks for a invalid inputs: testing if an invalid month such as 0 is handled correctly.
+     */
+    @Test
+    public void ZeroMonthTest() {
+        final String inputString = "0\n2019";
+        provideCommandLineArguments(inputString);
+        String expectedResult = "Invalid Input: The value for month may not be 0.";
+        Calendar.main(new String[0]);
+        assertTrue("The exception paths are not tested thoroughly: month=0\n",expectedResult.equals(getCalendarResult()));
+    }
+    /**
+     * This test case checks for a invalid inputs: testing if an invalid year such as a negative year is handled correctly.
+     */
+    @Test
+    public void NegativeYearTest() {
+        final String inputString = "5\n-3";
+        provideCommandLineArguments(inputString);
+        String expectedResult = "Invalid Input: The value for year may not be a negative value.";
+        Calendar.main(new String[0]);
+        assertTrue("The exception paths are not tested thoroughly: year<0\n",expectedResult.equals(getCalendarResult()));
+    }
+    /**
+     * This test case checks for a invalid inputs: testing if an invalid month such as a negative month is handled correctly.
+     */
+    @Test
+    public void NegativeMonthTest() {
+        final String inputString = "-5\n2019";
+        provideCommandLineArguments(inputString);
+        String expectedResult = "Invalid Input: The value for month may not be a negative value.";
+        Calendar.main(new String[0]);
+        assertTrue("The exception paths are not tested thoroughly: month<0\n",expectedResult.equals(getCalendarResult()));
+    }
+    /**
+     * This test case checks for a invalid inputs: testing if an invalid input type such as a string is handled correctly.
+     */
+    @Test
+    public void StringInputTest() {
+        final String inputString = "January\n2019";
+        provideCommandLineArguments(inputString);
+        String expectedResult = "Invalid Input: The value for month may only be of type int.";
+        Calendar.main(new String[0]);
+        assertTrue("The exception paths are not tested thoroughly: Unexpected Types\n",expectedResult.equals(getCalendarResult()));
     }
 }
-
-
-
-
-
-//import org.junit.*;
-//import static org.junit.Assert.*;
-//// import org.junit.BeforeClass;
-//// import org.junit.Before;
-//// import org.junit.After;
-//// import org.junit.Test;
-//// import org.junit.Assert;
-//
-//import java.io.ByteArrayOutputStream;
-//import java.io.PrintStream;
-//import java.util.*;
-//
-//
-//public class Tester1e {
-//
-//  /*Main method runs tests in this file*/
-//  public static void main(String args[]) {
-//    org.junit.runner.JUnitCore.main("Tester1e");
-//  }
-//
-//  static ByteArrayOutputStream localOut, localErr;
-//  static PrintStream sysOut, sysErr;
-//  static String [] empty = {};
-//
-//  @BeforeClass
-//  public static void setUp() throws Exception {
-//    sysOut = System.out;
-//    sysErr = System.err;
-//  }
-//
-//  // Before every test is run, reset the streams to capture
-//  // stdout/stderr
-//  @Before
-//  public void setUpStreams() {
-//    localOut = new ByteArrayOutputStream();
-//    localErr = new ByteArrayOutputStream();
-//    System.setOut(new PrintStream(localOut));
-//    System.setErr(new PrintStream(localErr));
-//  }
-//
-//  // After every test, restore stdout/stderr
-//  @After
-//  public void cleanUpStreams() {
-//    System.setOut(null);
-//    System.setErr(null);
-//    System.setOut(sysOut);
-//    System.setErr(sysErr);
-//  }
-//
-//  // Determine what the newline is on the running system
-//  String newline = System.getProperty("line.separator");
-//
-//  // Test the HelloLab class. This is a bit more complicated than usual
-//  // since we're sneaking a copy of the output from standard output!
-//  @Test public void HelloLab_main() {
-//    String expect = "Hello, Lab!\n";
-//    HelloLab.main(empty);
-//    String actual = localOut.toString();
-//    String actualNewline = actual.replaceAll("\\r?\\n","\n"); // Eliminate windows linebreaks
-//    String msg = String.format("Output mismatch\nEXPECTED:\n%s\nACTUAL:\n%s\n",expect,actual);
-//    assertTrue(msg,expect.equals(actualNewline));
-//  }
-//
-
-//}
