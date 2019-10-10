@@ -3,12 +3,14 @@ package assignment5;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
 import java.util.Scanner;
 
 public class StringPrint {
 	
+	private long lineCount;
 	private int randomVal;
 	private String input;
 	private String filePath;
@@ -48,6 +50,14 @@ public class StringPrint {
 		this.filePath = filePath;
 	}
 	
+	public long getLineCount() {
+		return this.lineCount;
+	}
+	
+	public void setLineCount(long lineCount) {
+		this.lineCount = lineCount;
+	}
+	
 	public void printOutput() {
 		System.out.print("You chose: " + input);
 	}
@@ -55,21 +65,34 @@ public class StringPrint {
 	public static void main(String[] args) throws IOException{
 		StringPrint stringPrint = new StringPrint();
 		Scanner scanner = new Scanner(System.in);
+		Path path;
+		Stream<String> stream;
 		
+		// CLI
 		System.out.println("Enter the file path: ");
 		stringPrint.setFilePath(scanner.nextLine());
-		
 		System.out.println("Enter a value: ");
 		stringPrint.setValue(scanner.nextInt());
+		
+		// get stream from file
+		path = Paths.get(stringPrint.getFilePath());
+		stream = Files.lines(path);
+		
+		// get file line count
+		stringPrint.setLineCount(stream.count());
+		
+		// calculate random number within range
+		stringPrint.setValue((int) (stringPrint.getValue() % stringPrint.getLineCount()));
 
-		try (Stream<String> stream = Files.lines(Paths.get(stringPrint.getFilePath()), 
-			StandardCharsets.UTF_8)) {
-			stringPrint.setString(stream.skip(stringPrint.getValue()).findFirst().get());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		// fetch appropriate line
+		stream = Files.lines(path);
+		stringPrint.setString(stream.skip(stringPrint.getValue()).findFirst().get());
+
+		// print the line
 		stringPrint.printOutput();
 		
+		// close resources
+		stream.close();
 		scanner.close();
 	}
 

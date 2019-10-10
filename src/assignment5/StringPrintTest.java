@@ -89,4 +89,14 @@ public class StringPrintTest {
         assertEquals(expectedResult, out.toString());
     }  
      
+     @Test
+    public void outOfBoundsValue() throws IOException {
+    	inputString = "src\\multipleLines.txt\n6";
+        in = new ByteArrayInputStream(inputString.getBytes());
+        System.setIn(in);
+        expectedResult = expectedResult.concat("Apples")
+        		.replaceAll("\\n|\\r\\n", System.getProperty("line.separator"));
+        StringPrint.main(new String[0]);
+        assertEquals(expectedResult, out.toString());
+    } 
 }
