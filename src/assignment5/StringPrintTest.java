@@ -12,6 +12,7 @@ public class StringPrintTest {
     private final InputStream inputStream = System.in;
 	private StringPrint stringPrint;
 	private String expectedResult;
+	private String inputString;
     private ByteArrayInputStream in;
     private ByteArrayOutputStream out;
     private PrintStream outputStream = System.out;
@@ -22,7 +23,8 @@ public class StringPrintTest {
     
     @Before
     public void setUpOutput() {
-    	expectedResult = null;
+    	expectedResult = "Enter the file path: \nEnter a value: \nYou chose: ";
+    	inputString = null;
         out = new ByteArrayOutputStream();
         System.setOut(new PrintStream(out));
     }
@@ -67,12 +69,24 @@ public class StringPrintTest {
     
      @Test
     public void oneStringFromFile() throws IOException {
-    	final String inputString = "src\\singleLine.txt\n7";
+    	inputString = "src\\singleLine.txt\n0";
         in = new ByteArrayInputStream(inputString.getBytes());
         System.setIn(in);
-        expectedResult = "Enter the file path: \nEnter a value: \nYou chose: Cheez-its"
+        expectedResult = expectedResult.concat("Cheez-its")
         		.replaceAll("\\n|\\r\\n", System.getProperty("line.separator"));
         StringPrint.main(new String[0]);
         assertEquals(expectedResult, out.toString());
     }
+     
+     @Test
+    public void manyStringsFromFile() throws IOException {
+    	inputString = "src\\multipleLines.txt\n1";
+        in = new ByteArrayInputStream(inputString.getBytes());
+        System.setIn(in);
+        expectedResult = expectedResult.concat("Banana")
+        		.replaceAll("\\n|\\r\\n", System.getProperty("line.separator"));
+        StringPrint.main(new String[0]);
+        assertEquals(expectedResult, out.toString());
+    }  
+     
 }

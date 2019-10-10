@@ -24,12 +24,28 @@ public class StringPrint {
 		randomVal = 0;
 	}
 	
+	public int getValue() {
+		return this.randomVal;
+	}
+	
 	public void setValue(int randomVal) {
 		this.randomVal = randomVal;
 	}
 	
 	public String getString() {
-		return input;
+		return this.input;
+	}
+	
+	public void setString(String input) {
+		this.input = input;
+	}
+	
+	public String getFilePath() {
+		return this.filePath;
+	}
+	
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
 	}
 	
 	public void printOutput() {
@@ -39,22 +55,19 @@ public class StringPrint {
 	public static void main(String[] args) throws IOException{
 		StringPrint stringPrint = new StringPrint();
 		Scanner scanner = new Scanner(System.in);
-		StringBuilder sb = new StringBuilder();
 		
 		System.out.println("Enter the file path: ");
-		stringPrint.filePath = scanner.nextLine();
+		stringPrint.setFilePath(scanner.nextLine());
+		
+		System.out.println("Enter a value: ");
+		stringPrint.setValue(scanner.nextInt());
 
-		try (Stream<String> stream = Files.lines(Paths.get(stringPrint.filePath), 
-				StandardCharsets.UTF_8)) {
-				stream.forEach(s -> sb.append(s));
+		try (Stream<String> stream = Files.lines(Paths.get(stringPrint.getFilePath()), 
+			StandardCharsets.UTF_8)) {
+			stringPrint.setString(stream.skip(stringPrint.getValue()).findFirst().get());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		stringPrint.input = sb.toString();
-
-		System.out.println("Enter a value: ");
-		stringPrint.setValue(scanner.nextInt());
-		
 		stringPrint.printOutput();
 		
 		scanner.close();
