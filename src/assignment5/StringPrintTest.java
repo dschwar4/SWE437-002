@@ -1,5 +1,3 @@
-package assignment5;
-
 import org.junit.*;
 import static org.junit.Assert.*;
 import java.io.ByteArrayInputStream;
@@ -12,7 +10,7 @@ public class StringPrintTest {
     private final InputStream inputStream = System.in;
 	private StringPrint stringPrint;
 	private String expectedResult, promptPath, promptValue, promptChoice;
-	private String promptValueError, promptFileError;
+	private String promptValueError, promptFileError, promptExit;
 	private String inputString;
     private ByteArrayInputStream in;
     private ByteArrayOutputStream out;
@@ -25,10 +23,11 @@ public class StringPrintTest {
     @Before
     public void setUpOutput() {
     	promptPath = "Enter the file path: \n";
-    	promptValue = "Enter a value: \n";
+    	promptValue = "Enter a value (-1 to exit): \n";
     	promptChoice = "You chose: ";
     	promptValueError = "Value must be a nonnegative integer.\n";
     	promptFileError = "Please enter a valid filepath.\n";
+    	promptExit = "Exiting program.\n";
     	expectedResult = null;
     	inputString = null;
         out = new ByteArrayOutputStream();
@@ -75,10 +74,11 @@ public class StringPrintTest {
     
      @Test
     public void oneStringFromFile() throws IOException {
-    	inputString = "src\\singleLine.txt\n0";
+    	inputString = "src\\singleLine.txt\n0\n-1";
         in = new ByteArrayInputStream(inputString.getBytes());
         System.setIn(in);
-        expectedResult = promptPath.concat(promptValue).concat(promptChoice).concat("Cheez-its")
+        expectedResult = promptPath.concat(promptValue).concat(promptChoice)
+        		.concat("Cheez-its\n").concat(promptValue).concat(promptExit)
         		.replaceAll("\\n|\\r\\n", System.getProperty("line.separator"));
         StringPrint.main(new String[0]);
         assertEquals(expectedResult, out.toString());
@@ -86,11 +86,11 @@ public class StringPrintTest {
      
      @Test
     public void manyStringsFromFile() throws IOException {
-    	inputString = "src\\multipleLines.txt\n1";
+    	inputString = "src\\multipleLines.txt\n1\n-1";
         in = new ByteArrayInputStream(inputString.getBytes());
         System.setIn(in);
-        expectedResult = promptPath.concat(promptValue)
-        		.concat(promptChoice).concat("Banana")
+        expectedResult = promptPath.concat(promptValue).concat(promptChoice)
+        		.concat("Banana\n").concat(promptValue).concat(promptExit)
         		.replaceAll("\\n|\\r\\n", System.getProperty("line.separator"));
         StringPrint.main(new String[0]);
         assertEquals(expectedResult, out.toString());
@@ -98,11 +98,11 @@ public class StringPrintTest {
      
      @Test
     public void outOfBoundsValue() throws IOException {
-    	inputString = "src\\multipleLines.txt\n6";
+    	inputString = "src\\multipleLines.txt\n6\n-1";
         in = new ByteArrayInputStream(inputString.getBytes());
         System.setIn(in);
         expectedResult = promptPath.concat(promptValue).concat(promptChoice)
-        		.concat("Apples")
+        		.concat("Apples\n").concat(promptValue).concat(promptExit)
         		.replaceAll("\\n|\\r\\n", System.getProperty("line.separator"));
         StringPrint.main(new String[0]);
         assertEquals(expectedResult, out.toString());
@@ -110,11 +110,12 @@ public class StringPrintTest {
      
      @Test
     public void negativeValue() throws IOException {
-    	inputString = "src\\multipleLines.txt\n-3\n2";
+    	inputString = "src\\multipleLines.txt\n-3\n2\n-1";
         in = new ByteArrayInputStream(inputString.getBytes());
         System.setIn(in);
         expectedResult = promptPath.concat(promptValue).concat(promptValueError)
-        		.concat(promptValue).concat(promptChoice).concat("Cheez-its")
+        		.concat(promptValue).concat(promptChoice).concat("Cheez-its\n")
+        		.concat(promptValue).concat(promptExit)
         		.replaceAll("\\n|\\r\\n", System.getProperty("line.separator"));
         StringPrint.main(new String[0]);
         assertEquals(expectedResult, out.toString());
@@ -122,24 +123,39 @@ public class StringPrintTest {
      
      @Test
     public void nonIntValue() throws IOException {
-    	inputString = "src\\multipleLines.txt\nseven\n2";
+    	inputString = "src\\multipleLines.txt\nseven\n2\n-1";
         in = new ByteArrayInputStream(inputString.getBytes());
         System.setIn(in);
         expectedResult = promptPath.concat(promptValue).concat(promptValueError)
-        		.concat(promptValue).concat(promptChoice).concat("Cheez-its")
+        		.concat(promptValue).concat(promptChoice).concat("Cheez-its\n")
+        		.concat(promptValue).concat(promptExit)
         		.replaceAll("\\n|\\r\\n", System.getProperty("line.separator"));
         StringPrint.main(new String[0]);
         assertEquals(expectedResult, out.toString());
     } 
      
      @Test
-    public void invalidFIle() throws IOException {
-    	inputString = "gobbledegook\nsrc\\multipleLines.txt\nseven\n2";
+    public void invalidFile() throws IOException {
+    	inputString = "gobbledegook\nsrc\\multipleLines.txt\nseven\n2\n-1";
         in = new ByteArrayInputStream(inputString.getBytes());
         System.setIn(in);
         expectedResult = promptPath.concat(promptFileError).concat(promptPath)
         		.concat(promptValue).concat(promptValueError)
-        		.concat(promptValue).concat(promptChoice).concat("Cheez-its")
+        		.concat(promptValue).concat(promptChoice).concat("Cheez-its\n")
+        		.concat(promptValue).concat(promptExit)
+        		.replaceAll("\\n|\\r\\n", System.getProperty("line.separator"));
+        StringPrint.main(new String[0]);
+        assertEquals(expectedResult, out.toString());
+    } 
+     
+     @Test
+    public void repromptValue() throws IOException {
+    	inputString = "src\\multipleLines.txt\n2\n12\n-1\n";
+        in = new ByteArrayInputStream(inputString.getBytes());
+        System.setIn(in);
+        expectedResult = promptPath.concat(promptValue).concat(promptChoice)
+        		.concat("Cheez-its\n").concat(promptValue).concat(promptChoice)
+        		.concat("Apples\n").concat(promptValue).concat(promptExit)
         		.replaceAll("\\n|\\r\\n", System.getProperty("line.separator"));
         StringPrint.main(new String[0]);
         assertEquals(expectedResult, out.toString());

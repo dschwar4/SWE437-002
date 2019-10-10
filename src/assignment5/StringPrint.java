@@ -1,5 +1,3 @@
-package assignment5;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -19,7 +17,7 @@ public class StringPrint {
 	public StringPrint() {
 		filePath = null;
 		input = null;
-		randomVal = -1;
+		randomVal = -2;
 	}
 	
 	public StringPrint(String input) {
@@ -60,7 +58,7 @@ public class StringPrint {
 	}
 	
 	public void printOutput() {
-		System.out.print("You chose: " + input);
+		System.out.println("You chose: " + input);
 	}
 	
 	public static void main(String[] args) throws IOException{
@@ -68,7 +66,7 @@ public class StringPrint {
 		Scanner scanner = new Scanner(System.in);
 		Path path = null;
 		Stream<String> stream = null;
-		boolean valid = false;
+		boolean valid = false, exit = false;
 		
 		// CLI - get file path
 		do {
@@ -84,38 +82,45 @@ public class StringPrint {
 			}
 		} while (!valid);
 		
-		// reset valid toggle
-		valid = false;
-		
-		// CLI - get random value
 		do {
-			System.out.println("Enter a value: ");
-			try {
-				stringPrint.setValue(scanner.nextInt());
-				   if (stringPrint.getValue() >= 0) {	// valid number provided
-					   valid = true;
-				   } else {
-					   System.out.println("Value must be a nonnegative integer.");		
-					   valid = false;
-				   }
-			} catch (InputMismatchException e) {
-				   System.out.println("Value must be a nonnegative integer.");
-				   scanner.next();				
-			}
-		} while (!valid);
-		
-		// get file line count
-		stringPrint.setLineCount(stream.count());
-		
-		// calculate random number within range
-		stringPrint.setValue((int) (stringPrint.getValue() % stringPrint.getLineCount()));
-
-		// fetch appropriate line
-		stream = Files.lines(path);
-		stringPrint.setString(stream.skip(stringPrint.getValue()).findFirst().get());
-
-		// print the line
-		stringPrint.printOutput();
+			// reset valid toggle
+			valid = false;
+			
+			// CLI - get random value
+			do {
+				System.out.println("Enter a value (-1 to exit): ");
+				try {
+					stringPrint.setValue(scanner.nextInt());
+					if (stringPrint.getValue() == -1) {	// user wants to exit
+						System.out.println("Exiting program.");
+						return;
+					}
+					if (stringPrint.getValue() >= 0) {	// valid number provided
+						valid = true;
+					} else {
+						System.out.println("Value must be a nonnegative integer.");		
+						valid = false;
+					}
+				} catch (InputMismatchException e) {
+					   System.out.println("Value must be a nonnegative integer.");
+					   scanner.next();				
+				}
+			} while (!valid);
+			
+			// get file line count
+			stream = Files.lines(path);
+			stringPrint.setLineCount(stream.count());
+			
+			// calculate random number within range
+			stringPrint.setValue((int) (stringPrint.getValue() % stringPrint.getLineCount()));
+	
+			// fetch appropriate line
+			stream = Files.lines(path);
+			stringPrint.setString(stream.skip(stringPrint.getValue()).findFirst().get());
+	
+			// print the line
+			stringPrint.printOutput();
+		} while (!exit);
 		
 		// close resources
 		stream.close();
