@@ -41,19 +41,16 @@ public class StringPrint {
 		Scanner scanner = new Scanner(System.in);
 		StringBuilder sb = new StringBuilder();
 		
-		System.out.println("Enter a string: ");
-		stringPrint.input = scanner.nextLine();
+		System.out.println("Enter the file path: ");
+		stringPrint.filePath = scanner.nextLine();
 
-//		System.out.println("Enter the file path: ");
-//		stringPrint.filePath = scanner.nextLine();
-//
-//		try (Stream<String> stream = Files.lines(Paths.get(stringPrint.filePath), 
-//				StandardCharsets.UTF_8)) {
-//				stream.forEach(s -> sb.append(s).append("\n"));
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//		stringPrint.input = sb.toString();
+		try (Stream<String> stream = Files.lines(Paths.get(stringPrint.filePath), 
+				StandardCharsets.UTF_8)) {
+				stream.forEach(s -> sb.append(s));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		stringPrint.input = sb.toString();
 
 		System.out.println("Enter a value: ");
 		stringPrint.setValue(scanner.nextInt());
