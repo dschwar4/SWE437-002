@@ -1,11 +1,12 @@
 package assignment5;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class StringPrint {
@@ -18,7 +19,7 @@ public class StringPrint {
 	public StringPrint() {
 		filePath = null;
 		input = null;
-		randomVal = 0;
+		randomVal = -1;
 	}
 	
 	public StringPrint(String input) {
@@ -65,18 +66,43 @@ public class StringPrint {
 	public static void main(String[] args) throws IOException{
 		StringPrint stringPrint = new StringPrint();
 		Scanner scanner = new Scanner(System.in);
-		Path path;
-		Stream<String> stream;
+		Path path = null;
+		Stream<String> stream = null;
+		boolean valid = false;
 		
-		// CLI
-		System.out.println("Enter the file path: ");
-		stringPrint.setFilePath(scanner.nextLine());
-		System.out.println("Enter a value: ");
-		stringPrint.setValue(scanner.nextInt());
+		// CLI - get file path
+		do {
+			System.out.println("Enter the file path: ");
+			try {
+				stringPrint.setFilePath(scanner.nextLine());
+				// get stream from file
+				path = Paths.get(stringPrint.getFilePath());
+				stream = Files.lines(path);
+				valid = true;
+			} catch (NoSuchFileException e) {
+				System.out.println("Please enter a valid filepath.");
+			}
+		} while (!valid);
 		
-		// get stream from file
-		path = Paths.get(stringPrint.getFilePath());
-		stream = Files.lines(path);
+		// reset valid toggle
+		valid = false;
+		
+		// CLI - get random value
+		do {
+			System.out.println("Enter a value: ");
+			try {
+				stringPrint.setValue(scanner.nextInt());
+				   if (stringPrint.getValue() >= 0) {	// valid number provided
+					   valid = true;
+				   } else {
+					   System.out.println("Value must be a nonnegative integer.");		
+					   valid = false;
+				   }
+			} catch (InputMismatchException e) {
+				   System.out.println("Value must be a nonnegative integer.");
+				   scanner.next();				
+			}
+		} while (!valid);
 		
 		// get file line count
 		stringPrint.setLineCount(stream.count());
