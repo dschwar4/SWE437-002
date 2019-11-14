@@ -54,7 +54,7 @@ public class Calendar
    }
 
    // return true if the given year is a leap year
-   private static boolean isLeapYear(int year) {
+   public static boolean isLeapYear(int year) {
       if ((year % 4 == 0) || (year % 100 != 0))
          return true;
       if (year % 400 == 0)
